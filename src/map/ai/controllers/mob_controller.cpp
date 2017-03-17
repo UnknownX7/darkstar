@@ -295,7 +295,7 @@ bool CMobController::MobSkill(int wsList)
         {
             continue;
         }
-        float currentDistance = distance(PMob->loc.p, PActionTarget->loc.p);
+        float currentDistance = distance(PMob->loc.p, PActionTarget->loc.p) - PActionTarget->m_ModelSize;
         if (!PMobSkill->isTwoHour() && luautils::OnMobSkillCheck(PActionTarget, PMob, PMobSkill) == 0) //A script says that the move in question is valid
         {
             if (currentDistance <= PMobSkill->getDistance())
@@ -337,7 +337,7 @@ bool CMobController::TrySpecialSkill()
     else if (PTarget != nullptr)
     {
         // distance check for special skill
-        float currentDistance = distance(PMob->loc.p, PTarget->loc.p);
+        float currentDistance = distance(PMob->loc.p, PTarget->loc.p) - PTarget->m_ModelSize;
 
         if (currentDistance <= PSpecialSkill->getDistance())
         {
@@ -503,7 +503,7 @@ void CMobController::DoCombatTick(time_point tick)
     luautils::OnMobFight(PMob, PTarget);
 
     // Try to spellcast (this is done first so things like Chainspell spam is prioritised over TP moves etc.
-    if (IsSpecialSkillReady(currentDistance) && TrySpecialSkill())
+    if (IsSpecialSkillReady(currentDistance - PTarget->m_ModelSize) && TrySpecialSkill())
     {
         return;
     }
@@ -576,7 +576,7 @@ void CMobController::Move()
         }
     }
 
-    float currentDistance = distance(PMob->loc.p, PTarget->loc.p);
+    float currentDistance = distance(PMob->loc.p, PTarget->loc.p) - PTarget->m_ModelSize;
     if (PMob->getMobMod(MOBMOD_SHARE_POS) > 0)
     {
         CMobEntity* posShare = (CMobEntity*)PMob->GetEntity(PMob->getMobMod(MOBMOD_SHARE_POS) + PMob->targid, TYPE_MOB);
@@ -609,7 +609,7 @@ void CMobController::Move()
                 if (!PMob->PAI->PathFind->IsFollowingPath() || distanceSquared(PMob->PAI->PathFind->GetDestination(), PTarget->loc.p) > 10)
                 {
                     //path to the target if we don't have a path already
-                    PMob->PAI->PathFind->PathInRange(PTarget->loc.p, attack_range - 0.2f, PATHFLAG_WALLHACK | PATHFLAG_RUN);
+                    PMob->PAI->PathFind->PathInRange(PTarget->loc.p, (attack_range + PTarget->m_ModelSize) - 0.2f, PATHFLAG_WALLHACK | PATHFLAG_RUN);
                 }
                 PMob->PAI->PathFind->FollowPath();
                 if (!PMob->PAI->PathFind->IsFollowingPath())
