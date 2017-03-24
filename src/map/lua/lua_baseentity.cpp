@@ -11040,6 +11040,28 @@ int32 CLuaBaseEntity::canChangeState(lua_State* L)
     return 1;
 }
 
+int32 CLuaBaseEntity::setTarget(lua_State *L)
+{
+    DSP_DEBUG_BREAK_IF(m_PBaseEntity == nullptr);
+    DSP_DEBUG_BREAK_IF(lua_isnil(L, 1) || !lua_isuserdata(L, 1));
+
+    CLuaBaseEntity* PLuaBaseEntity = Lunar<CLuaBaseEntity>::check(L, 1);
+
+    if (PLuaBaseEntity)
+    {
+        CBaseEntity* PBaseEntity = PLuaBaseEntity->GetBaseEntity();
+        if (PBaseEntity)
+        {
+            CState* PState = PBaseEntity->PAI->GetCurrentState();
+            if (PState)
+            {
+                PState->SetTarget(PBaseEntity->targid);
+            }
+        }
+    }
+    return 0;
+}
+
 int32 CLuaBaseEntity::isAlive(lua_State* L)
 {
     DSP_DEBUG_BREAK_IF(m_PBaseEntity == nullptr);
@@ -11561,6 +11583,7 @@ Lunar<CLuaBaseEntity>::Register_t CLuaBaseEntity::methods[] =
     LUNAR_DECLARE_METHOD(CLuaBaseEntity,resetAI),
     LUNAR_DECLARE_METHOD(CLuaBaseEntity,getEntity),
     LUNAR_DECLARE_METHOD(CLuaBaseEntity,canChangeState),
+    LUNAR_DECLARE_METHOD(CLuaBaseEntity,setTarget),
     LUNAR_DECLARE_METHOD(CLuaBaseEntity,isAlive),
     LUNAR_DECLARE_METHOD(CLuaBaseEntity,isDead),
     LUNAR_DECLARE_METHOD(CLuaBaseEntity,engage),
