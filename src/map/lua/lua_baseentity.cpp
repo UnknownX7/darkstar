@@ -96,6 +96,7 @@
 #include "../utils/mobutils.h"
 #include "../map.h"
 #include "../alliance.h"
+#include "../entities/baseentity.h"
 #include "../entities/mobentity.h"
 #include "../entities/automatonentity.h"
 #include "../mobskill.h"
@@ -116,6 +117,7 @@
 #include "../mob_spell_container.h"
 
 #include "../ai/ai_container.h"
+#include "../ai/controllers/controller.h"
 #include "../ai/controllers/mob_controller.h"
 #include "../ai/states/weaponskill_state.h"
 #include "../ai/states/respawn_state.h"
@@ -11062,6 +11064,34 @@ int32 CLuaBaseEntity::setTarget(lua_State *L)
     return 0;
 }
 
+int32 CLuaBaseEntity::faceTarget(lua_State *L)
+{
+    DSP_DEBUG_BREAK_IF(m_PBaseEntity == nullptr);
+    //DSP_DEBUG_BREAK_IF(lua_isnil(L, 1) || !lua_isuserdata(L, 1));
+
+    CLuaBaseEntity* PLuaBaseEntity = Lunar<CLuaBaseEntity>::check(L, 1);
+
+    if (PLuaBaseEntity)
+    {
+        CBaseEntity* PBaseEntity = PLuaBaseEntity->GetBaseEntity();
+        if (PBaseEntity)
+        {
+            auto PMobController = dynamic_cast<CMobController*>(m_PBaseEntity->PAI->GetController());
+            if (PMobController) {
+                PMobController->FaceTarget(PBaseEntity->targid);
+            }
+        }
+    }
+    else
+    {
+        auto PMobController = dynamic_cast<CMobController*>(m_PBaseEntity->PAI->GetController());
+        if (PMobController) {
+            PMobController->FaceTarget();
+        }
+    }
+    return 0;
+}
+
 int32 CLuaBaseEntity::isAlive(lua_State* L)
 {
     DSP_DEBUG_BREAK_IF(m_PBaseEntity == nullptr);
@@ -11584,6 +11614,7 @@ Lunar<CLuaBaseEntity>::Register_t CLuaBaseEntity::methods[] =
     LUNAR_DECLARE_METHOD(CLuaBaseEntity,getEntity),
     LUNAR_DECLARE_METHOD(CLuaBaseEntity,canChangeState),
     LUNAR_DECLARE_METHOD(CLuaBaseEntity,setTarget),
+    LUNAR_DECLARE_METHOD(CLuaBaseEntity,faceTarget),
     LUNAR_DECLARE_METHOD(CLuaBaseEntity,isAlive),
     LUNAR_DECLARE_METHOD(CLuaBaseEntity,isDead),
     LUNAR_DECLARE_METHOD(CLuaBaseEntity,engage),

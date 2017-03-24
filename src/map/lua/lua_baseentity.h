@@ -617,6 +617,7 @@ public:
     int32 canChangeState(lua_State* L);
 
     int32 setTarget(lua_State *L);
+    int32 faceTarget(lua_State *L);
 
     int32 isAlive(lua_State* L);
     int32 isDead(lua_State* L);

@@ -48,6 +48,8 @@ public:
     void TapDeaggroTime();
     virtual void Cast(uint16 targid, uint16 spellid) override;
 
+    void FaceTarget(uint16 targid = 0);
+
 protected:
     virtual bool TryDeaggro();
 
@@ -63,7 +65,6 @@ protected:
     void Move();
 
     virtual void DoCombatTick(time_point tick);
-    void FaceTarget(uint16 targid = 0);
     virtual void HandleEnmity();
 
     virtual void DoRoamTick(time_point tick);
